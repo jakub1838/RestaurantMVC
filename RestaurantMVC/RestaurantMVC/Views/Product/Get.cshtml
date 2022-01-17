@@ -1,0 +1,53 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{ }
+
+
+@model List<ProductDto>;
+<!--
+foreach(var dto in Model)
+{
+    <div>
+
+        dto.Name
+
+        using( Html.BeginForm("Delete", "Product", new { id = dto.Id }))
+        {
+            <input type="submit" value="delete"/>
+        }
+    </div>
+}
+-->
+<table class="content-wrapper table table-dark">
+    <tr>
+        <th scope="col">
+            @Html.DisplayName("Name")
+        </th>
+        <th scope="col">
+            @Html.DisplayName("ID")
+        </th>
+        <th scope="col" >
+            @Html.DisplayName("Price")
+        </th>
+    </tr>
+    @foreach (var dto in Model)
+    {
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => dto.Name)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => dto.Id)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => dto.Price)
+    </td>
+    <td>
+        @using( Html.BeginForm("Delete", "Product", new { id = dto.Id }))
+        {
+        <input class="btn btn-outline-danger" type="submit" value="Delete Item" />
+        }
+    </td>
+</tr>}
+    </table>

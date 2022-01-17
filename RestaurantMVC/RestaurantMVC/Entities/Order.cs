@@ -10,7 +10,7 @@ namespace RestaurantMVC.Entities
         public int Id { get; set; }
 
         [ForeignKey("User")]
-        public int userId { get; set; }
+        public int UserId { get; set; }
         public User User { get; set; }
 
         public virtual ICollection<OrderProducts> Products { get; set; }
