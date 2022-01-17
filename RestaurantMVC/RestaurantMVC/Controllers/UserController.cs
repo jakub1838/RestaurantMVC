@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+
 namespace RestaurantMVC.Controllers
 {
     public class UserController : Controller
@@ -50,7 +51,7 @@ namespace RestaurantMVC.Controllers
 
             Response.Cookies.Append("Authorization", key);
 
-            return View();
+            return RedirectToAction("Index", "Home");/**/
         }
 
         public IActionResult Logout()
