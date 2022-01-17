@@ -47,8 +47,6 @@ namespace RestaurantMVC.Services
 
                 Product entity = mapper.Map<Product>(dto);
 
-                User user = accountService.GetUser(claims);
-
                 await context.Products.AddAsync(entity);
 
 
@@ -84,7 +82,8 @@ namespace RestaurantMVC.Services
             {
                 Product entity = mapper.Map<Product>(dto);
 
-                if (!AuthorizeAdmin(claims)) {
+                if (!AuthorizeAdmin(claims))
+                {
                     throw new ForbidException("");
                 }
 
@@ -114,16 +113,6 @@ namespace RestaurantMVC.Services
             return dto;
         }
 
-        public bool AuthorizeAdmin(ClaimsPrincipal claims)
-        {
-            User user = accountService.GetUser(claims);
-
-            if (user == null)
-                return false;
-
-            return user.RoleId == 1;
-        }
-
         public async Task<List<ProductDto>> Search(string searchPhrase)
         {
             List<Product> entity = await context.Products.ToListAsync();
@@ -133,6 +122,26 @@ namespace RestaurantMVC.Services
             List<ProductDto> dtos = mapper.Map<List<ProductDto>>(entity);
 
             return dtos;
+        }
+
+        public bool AuthorizeAdmin(ClaimsPrincipal claims)
+        {
+            User user = accountService.GetUser(claims);
+
+            if (user == null)
+                return false;
+
+            return user.RoleId == 1;
+        }
+        public static bool IsProductValid(ProductDto productDto)
+        {
+            if (productDto.Price <= 0)
+                return false;
+            if (productDto.Name == null)
+                return false;
+            if (productDto.Name == "")
+                return false;
+            return true;
         }
     }
 }

@@ -104,6 +104,18 @@ namespace RestaurantMVC.Services
             newUser.PasswordHash = hashedPassword;
             context.Users.Add(newUser);
             context.SaveChanges();
+
+        }
+        public static bool IsUsernameValid(string username)
+        {
+            if (username.Length < 3)
+                return false;
+            if (username.Length > 32)
+                return false;
+            if (username == "Something")
+                return false;
+
+            return true;
         }
     }
 }

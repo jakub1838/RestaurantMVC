@@ -16,7 +16,6 @@ namespace RestaurantMVC.Entities
         public string Username { get; set; }
         public string PasswordHash { get; set; }
         public string Email { get; set; }
-        public virtual Role Role { get; set; }
 
         [ForeignKey("Role")]
         public int RoleId { get; set; }

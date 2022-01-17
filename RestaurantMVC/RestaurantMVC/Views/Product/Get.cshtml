@@ -27,7 +27,7 @@ foreach(var dto in Model)
         <th scope="col">
             @Html.DisplayName("ID")
         </th>
-        <th scope="col" >
+        <th scope="col">
             @Html.DisplayName("Price")
         </th>
     </tr>
@@ -44,10 +44,10 @@ foreach(var dto in Model)
         @Html.DisplayFor(modelItem => dto.Price)
     </td>
     <td>
-        @using( Html.BeginForm("Delete", "Product", new { id = dto.Id }))
+        @using (Html.BeginForm("Delete", "Product", new { id = dto.Id }))
         {
-        <input class="btn btn-outline-danger" type="submit" value="Delete Item" />
-        }
+<input class="btn btn-outline-danger" type="submit" value="Delete Item" />}
     </td>
-</tr>}
-    </table>
+</tr>
+}
+</table>

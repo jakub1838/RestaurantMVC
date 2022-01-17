@@ -1,0 +1,38 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!-- wypisywanie wszystkich zamowien i ich tworzenie -->
+@model List<OrderDto>
+<table class="content-wrapper table table-dark">
+    <tr>
+        <th scope="col">
+            @Html.DisplayName("ID")
+        </th>
+        <th scope="col">
+            @Html.DisplayName("Is done?")
+        </th>
+    </tr>
+    @foreach (var dto in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => dto.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => dto.isDone)
+            </td>
+            <td>
+                @using (Html.BeginForm("Edit", "Order", new { id = dto.Id }))
+                {
+                    <input class="btn btn-outline-danger" type="submit" value="Edit order" />
+                }
+            </td>
+        </tr>
+        @using (Html.BeginForm("Create", "Order", new { id = dto.Id }))
+        {
+            <input class="btn btn-outline-danger" type="submit" value="Edit order" />
+        }
+    }
+</table>

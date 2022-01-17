@@ -18,6 +18,8 @@ namespace RestaurantMVC.Services
         public Task Delete(int id, ClaimsPrincipal claims);
         public Task Edit(OrderDto dto, ClaimsPrincipal claims);
         public Task Create(OrderDto dto, List<int> productIds, ClaimsPrincipal claims);
+        public Task Create(OrderDto dto, ClaimsPrincipal claims);
+        public Task AddProduct(int orderId, int productId, ClaimsPrincipal claims);
     }
     public class OrderService : IOrderService
     {
@@ -38,6 +40,11 @@ namespace RestaurantMVC.Services
                 Order entity = mapper.Map<Order>(dto);
 
                 User user = accountService.GetUser(claims);
+
+                if (user == null)
+                {
+                    throw new NotFoundException("Order needs to be assigned to a user");
+                }
 
                 entity.UserId = user.Id;
 
@@ -62,6 +69,28 @@ namespace RestaurantMVC.Services
             }
         }
 
+        public async Task Create(OrderDto dto, ClaimsPrincipal claims)
+        {
+            using (var transaction = await context.Database.BeginTransactionAsync())
+            {
+                Order entity = mapper.Map<Order>(dto);
+
+                User user = accountService.GetUser(claims);
+
+                if (user == null)
+                {
+                    throw new NotFoundException("Order needs to be assigned to a user");
+                }
+
+                entity.UserId = user.Id;
+
+                await context.Orders.AddAsync(entity);
+
+                await context.SaveChangesAsync();
+                transaction.Commit();
+            }
+        }
+
         public async Task Delete(int id, ClaimsPrincipal claims)
         {
             using (var transaction = await context.Database.BeginTransactionAsync())
@@ -69,11 +98,11 @@ namespace RestaurantMVC.Services
                 Order entity = await context.Orders.FindAsync(id);
 
                 if (entity == null)
-                    throw new NotFoundException("");
+                    throw new NotFoundException($"Order with {id} has not been found");
 
                 if (!AuthorizeAdmin(claims))
                 {
-                    throw new ForbidException("");
+                    throw new ForbidException("You need to be an admin to delete orders.");
                 }
 
                 context.Orders.Remove(entity);
@@ -90,11 +119,11 @@ namespace RestaurantMVC.Services
                 Order entity = mapper.Map<Order>(dto);
 
                 if (entity == null)
-                    throw new NotFoundException("");
+                    throw new NotFoundException($"Order has not been found");
 
-                if (!AuthorizeAdmin(claims))
+                if (!Authorize(entity, claims))
                 {
-                    throw new ForbidException("");
+                    throw new ForbidException("You are not allowed to edit this order");
                 }
 
                 context.Orders.Update(entity);
@@ -127,16 +156,48 @@ namespace RestaurantMVC.Services
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity == null)
-                throw new NotFoundException("");
+                throw new NotFoundException($"Order with {id} has not been found");
 
             if (!Authorize(entity, claims))
             {
-                throw new ForbidException("");
+                throw new ForbidException("You are not allowed to see this order");
             }
 
             OrderDto dto = mapper.Map<OrderDto>(entity);
 
             return dto;
+        }
+
+        public async Task AddProduct(int orderId, int productId, ClaimsPrincipal claims)
+        {
+            using (var transaction = await context.Database.BeginTransactionAsync())
+            {
+                Order order = await context.Orders.FindAsync(orderId);
+                Product product = await context.Products.FindAsync(productId);
+
+                if (order == null)
+                    throw new NotFoundException($"Order with {orderId} has not been found");
+                if (product == null)
+                    throw new NotFoundException($"Product with {productId} has not been found");
+
+                if (!Authorize(order, claims))
+                {
+                    throw new ForbidException("You are not allowed to edit this order");
+                }
+
+                OrderProducts orderProducts = new OrderProducts()
+                {
+                    OrderId = orderId,
+                    ProductId = productId,
+                };
+
+                order.Products.Add(orderProducts);
+
+                context.Orders.Update(order);
+
+                await context.SaveChangesAsync();
+                transaction.Commit();
+            }
         }
 
         public bool Authorize(Order entity, ClaimsPrincipal claims)
@@ -149,7 +210,7 @@ namespace RestaurantMVC.Services
             return user.RoleId == 1 || user.Id == entity.UserId;
         }
 
-        public bool AuthorizeAdmin( ClaimsPrincipal claims)
+        public bool AuthorizeAdmin(ClaimsPrincipal claims)
         {
             User user = accountService.GetUser(claims);
 

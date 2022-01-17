@@ -6,7 +6,8 @@ namespace RestaurantMVC.Models
     public class RegistrationDto
     {
         [Required]
-        [MinLength(6, ErrorMessage = "Username length must be betweet 3-32")]
+        [MinLength(3, ErrorMessage = "Username length must be betweet 3-32")]
+        [MaxLength(32, ErrorMessage = "Username length must be betweet 3-32")]
         public string Username { get; set; }
 
         [Required]

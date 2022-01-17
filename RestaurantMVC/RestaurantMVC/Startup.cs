@@ -70,6 +70,7 @@ namespace RestaurantMVC
 
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IValidator<RegistrationDto>, RegistrationDtoValidator>();
         }
 

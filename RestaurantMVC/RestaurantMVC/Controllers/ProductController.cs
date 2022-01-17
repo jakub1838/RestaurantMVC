@@ -70,5 +70,6 @@ namespace RestaurantMVC.Controllers
             List<ProductDto> producDtos = await productService.Search(searchPhrase);
             return View(producDtos);
         }
+
     }
 }
