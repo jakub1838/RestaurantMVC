@@ -45,7 +45,7 @@ foreach(var dto in Model)
             </td>
             <td>
 
-                @if (ViewBag.Role == 1)
+                @if (ViewBag.RoleId == 1)
                 {
                     using (Html.BeginForm("Delete", "Product", new { id = dto.Id }))
                     {

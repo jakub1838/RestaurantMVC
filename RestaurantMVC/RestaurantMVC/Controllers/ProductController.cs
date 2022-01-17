@@ -64,7 +64,7 @@ namespace RestaurantMVC.Controllers
         public async Task<IActionResult> Get()
         {
             List<ProductDto> producDtos = await productService.Get();
-
+            ViewBag.RoleId = accountService.GetUser(User).RoleId;
 
             return View(producDtos);
         }
