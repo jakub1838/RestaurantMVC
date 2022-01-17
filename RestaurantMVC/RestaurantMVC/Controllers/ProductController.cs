@@ -12,10 +12,12 @@ namespace RestaurantMVC.Controllers
     public class ProductController : Controller
     {
         private readonly IProductService productService;
+        private readonly IAccountService accountService;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IAccountService accountService)
         {
             this.productService = productService;
+            this.accountService = accountService;
         }
 
         // GET: ProductController
@@ -62,6 +64,8 @@ namespace RestaurantMVC.Controllers
         public async Task<IActionResult> Get()
         {
             List<ProductDto> producDtos = await productService.Get();
+
+
             return View(producDtos);
         }
         [HttpGet("search/{searchPhrase}")]

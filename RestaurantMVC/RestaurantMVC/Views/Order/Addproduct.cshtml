@@ -1,0 +1,39 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<ProductDto>   
+<table class="content-wrapper table table-dark">
+    <tr>
+        <th scope="col">
+            @Html.DisplayName("Name")
+        </th>
+        <th scope="col">
+            @Html.DisplayName("Price")
+        </th>
+    </tr>
+    @foreach (var dto in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => dto.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => dto.Price)
+            </td>
+            <td>
+                @using (Html.BeginForm("AddProduct", "Order", 
+                new { 
+                    orderId = ViewContext.RouteData.Values["orderId"], 
+                    productId = dto.Id 
+                },
+                FormMethod.Post))
+                {
+                    <input type="submit" class="button" value="Add" />
+                }
+            </td>
+        </tr>
+    }
+</table>
+@Html.ActionLink("Go back", "Index", "Order")

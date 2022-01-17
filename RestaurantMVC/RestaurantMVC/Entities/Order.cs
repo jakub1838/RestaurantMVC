@@ -6,6 +6,11 @@ namespace RestaurantMVC.Entities
 {
     public class Order
     {
+        public Order()
+        {
+            Products = new List<OrderProducts>();
+        }
+
         [Key]
         public int Id { get; set; }
 

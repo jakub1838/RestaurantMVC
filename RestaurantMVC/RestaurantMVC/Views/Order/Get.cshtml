@@ -1,4 +1,5 @@
-﻿@*
+﻿@using Microsoft.AspNetCore.Routing
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -13,8 +14,12 @@
         <th scope="col">
             @Html.DisplayName("Is done?")
         </th>
+        <th scope="col">
+            @Html.DisplayName("User")
+        </th>
+        <th></th>
     </tr>
-    @foreach (var dto in Model)
+    @foreach (OrderDto dto in Model)
     {
         <tr>
             <td>
@@ -23,16 +28,25 @@
             <td>
                 @Html.DisplayFor(modelItem => dto.isDone)
             </td>
+             <td>
+                @Html.DisplayFor(modelItem => dto.User.Username)
+            </td>
             <td>
-                @using (Html.BeginForm("Edit", "Order", new { id = dto.Id }))
+                @Html.ActionLink("Add Products", "AddProduct", "Order", new { id = dto.Id })
+            </td>
+            <td>
+                @Html.ActionLink("Products", "products", "Order", new { id = dto.Id })
+            </td>
+            <td>
+                @using (Html.BeginForm("Delete", "Order", new { id = dto.Id }))
                 {
-                    <input class="btn btn-outline-danger" type="submit" value="Edit order" />
+                    <input class="btn btn-outline-danger" type="submit" value="Delete Item" />
                 }
             </td>
         </tr>
-        @using (Html.BeginForm("Create", "Order", new { id = dto.Id }))
-        {
-            <input class="btn btn-outline-danger" type="submit" value="Edit order" />
-        }
     }
 </table>
+@using (Html.BeginForm("Create", "Order", FormMethod.Post))
+{
+    <input type="submit" class="button" value="Create new order" />
+}

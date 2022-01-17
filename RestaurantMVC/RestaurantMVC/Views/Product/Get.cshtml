@@ -33,21 +33,26 @@ foreach(var dto in Model)
     </tr>
     @foreach (var dto in Model)
     {
-<tr>
-    <td>
-        @Html.DisplayFor(modelItem => dto.Name)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => dto.Id)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => dto.Price)
-    </td>
-    <td>
-        @using (Html.BeginForm("Delete", "Product", new { id = dto.Id }))
-        {
-<input class="btn btn-outline-danger" type="submit" value="Delete Item" />}
-    </td>
-</tr>
-}
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => dto.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => dto.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => dto.Price)
+            </td>
+            <td>
+
+                @if (ViewBag.Role == 1)
+                {
+                    using (Html.BeginForm("Delete", "Product", new { id = dto.Id }))
+                    {
+                        <input class="btn btn-outline-danger" type="submit" value="Delete Item" />
+                    }
+                }
+            </td>
+        </tr>
+    }
 </table>

@@ -4,11 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RestaurantMVC.Entities
 {
-    public enum UserPermissionLevel
-    {
-        Admin,
-        User
-    }
     public class User
     {
         [Key]

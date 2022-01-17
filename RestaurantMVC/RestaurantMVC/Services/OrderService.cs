@@ -20,6 +20,7 @@ namespace RestaurantMVC.Services
         public Task Create(OrderDto dto, List<int> productIds, ClaimsPrincipal claims);
         public Task Create(OrderDto dto, ClaimsPrincipal claims);
         public Task AddProduct(int orderId, int productId, ClaimsPrincipal claims);
+        public Task<IEnumerable<ProductDto>> GetProducts(int orderId, ClaimsPrincipal claims);
     }
     public class OrderService : IOrderService
     {
@@ -137,7 +138,7 @@ namespace RestaurantMVC.Services
         public async Task<List<OrderDto>> Get(ClaimsPrincipal claims)
         {
             List<Order> entity = await context.Orders
-                .Include(x => x.Products)
+                .Include(x => x.Products).Include(x => x.User)
                 .ToListAsync();
 
             List<Order> filteredEntities = entity
@@ -199,6 +200,19 @@ namespace RestaurantMVC.Services
                 transaction.Commit();
             }
         }
+        public async Task<IEnumerable<ProductDto>> GetProducts(int orderId, ClaimsPrincipal claims)
+        {
+            Order order = await context.Orders.Include(x => x.Products).ThenInclude(x => x.Product).FirstOrDefaultAsync(x => x.Id == orderId);
+
+            if (!Authorize(order, claims))
+            {
+                throw new ForbidException("You are not allowed to edit this order");
+            }
+
+            IEnumerable<Product> products = order.Products.Select(x => x.Product);
+
+            return mapper.Map<IEnumerable<ProductDto>>(products);
+        }
 
         public bool Authorize(Order entity, ClaimsPrincipal claims)
         {
@@ -220,5 +234,7 @@ namespace RestaurantMVC.Services
 
             return user.RoleId == 1;
         }
+
+        
     }
 }

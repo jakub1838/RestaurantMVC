@@ -42,7 +42,7 @@ namespace RestaurantMVC.Services
             {
                 if (!AuthorizeAdmin(claims))
                 {
-                    throw new ForbidException("");
+                    throw new ForbidException("Only admins can create products");
                 }
 
                 Product entity = mapper.Map<Product>(dto);
@@ -62,11 +62,11 @@ namespace RestaurantMVC.Services
                 Product product = await context.Products.FindAsync(id);
 
                 if (product == null)
-                    throw new NotFoundException("");
+                    throw new NotFoundException($"Product with id {id} has not been found");
 
                 if (!AuthorizeAdmin(claims))
                 {
-                    throw new ForbidException("");
+                    throw new ForbidException("Only admins can delete products");
                 }
 
                 context.Products.Remove(product);
@@ -84,7 +84,7 @@ namespace RestaurantMVC.Services
 
                 if (!AuthorizeAdmin(claims))
                 {
-                    throw new ForbidException("");
+                    throw new ForbidException("Only admins can edit products");
                 }
 
                 context.Products.Update(entity);

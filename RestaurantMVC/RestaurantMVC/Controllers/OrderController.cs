@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RestaurantMVC.Entities;
 
 namespace RestaurantMVC.Controllers
 {
@@ -12,35 +13,38 @@ namespace RestaurantMVC.Controllers
     [Route("[controller]")]
     public class OrderController : Controller
     {
+        private readonly IProductService productService; 
         private readonly IOrderService orderService;
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, IProductService productService)
         {
             this.orderService = orderService;
+            this.productService = productService;
         }
 
         [HttpGet()]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            //List<OrderDto> orderDtos = await orderService.Get(User);
+            return RedirectToAction("Get");
         }
-
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromForm] OrderDto orderDto)
+        public async Task<IActionResult> Create()
         {
+            OrderDto orderDto = new OrderDto()
+            {
+                isDone = false, Products = new List<OrderProducts>()
+            };
             await orderService.Create(orderDto, User);
-            return View("Index");
-        }
-        [HttpGet("create")]
-        public IActionResult CreateForm()
-        {
-            return View();
+
+            List<OrderDto> orderDtos = await orderService.Get(User);
+            return RedirectToAction("Index");
         }
 
         [HttpPost("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await orderService.Delete(id, User);
-            return View("Index");
+            return RedirectToAction("Index");
         }
 
         [HttpGet("get/{id}")]
@@ -55,17 +59,26 @@ namespace RestaurantMVC.Controllers
             List<OrderDto> orderDtos = await orderService.Get(User);
             return View(orderDtos);
         }
-        [HttpGet("addproduct/{orderId}/{productId}")]
+
+        [HttpGet("addproduct/{orderId}")]
+        public async Task<IActionResult> AddProduct([FromRoute] int orderId)
+        {
+            var products = await productService.Get();
+            return View("addproduct", products);
+        }
+        [HttpPost("addproduct/{orderId}/{productId}")]
         public async Task<IActionResult> AddProduct([FromRoute] int orderId, [FromRoute] int productId)
         {
             await orderService.AddProduct(orderId, productId, User);
-            return View();
+            return RedirectToAction($"addproduct", new {orderId});
         }
-        [HttpGet("edit/{dto}")]
-        public async Task<IActionResult> Edit([FromForm] OrderDto dto)
+
+        [HttpGet("products/{orderId}")]
+        public async Task<IActionResult> Products([FromRoute] int orderId)
         {
-            await orderService.Edit(dto, User);
-            return View();
+            var productDtos = await orderService.GetProducts(orderId, User);
+
+            return View(productDtos);
         }
     }
 }
